@@ -1,13 +1,20 @@
 import { useState } from 'react';
 import { Eye, EyeOff, Upload } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
+  const navigate = useNavigate();
 
   // Navigation pour retourner à la page d'accueil
   const navigateToHome = () => {
     window.location.href = '/';
   };
+  
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [generatedUsername, setGeneratedUsername] = useState('');
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -26,9 +33,75 @@ export default function Register() {
     }));
   };
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    // Handle form submission logic here
+  const handleSubmit = async () => {
+    // Validation de base
+    if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.password) {
+      setError('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+    
+    if (!formData.agreeToTerms) {
+      setError('Vous devez accepter les termes et conditions');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Préparation des données pour le backend
+      const requestData = {
+        nomUtilisateur: `${formData.firstName}_${formData.lastName}`.toLowerCase(),
+        motDePasse: formData.password,
+        email: formData.email,
+        telephone: '+221' + formData.phone,
+        role: 'CLIENT' // Par défaut, on inscrit un client
+      };
+      
+      // Appel à l'API d'inscription
+      const response = await fetch('http://localhost:8080/api/auth/inscription', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestData)
+      });
+      
+      // Tenter de parser la réponse en JSON, sinon utiliser le texte brut
+      let data;
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        try {
+          // Essayer de parser le texte comme JSON
+          data = JSON.parse(text);
+        } catch (e) {
+          // Si ce n'est pas du JSON valide, utiliser le texte brut
+          data = { message: text };
+        }
+      }
+      
+      if (response.ok) {
+        // Récupérer le nom d'utilisateur généré
+        const username = data.nomUtilisateur || requestData.nomUtilisateur;
+        setGeneratedUsername(username);
+        setSuccess(`Inscription réussie! Votre nom d'utilisateur est: ${username}. Redirection vers la page de connexion...`);
+        
+        // Redirection vers la page de connexion après 5 secondes (plus de temps pour voir le nom d'utilisateur)
+        setTimeout(() => {
+          navigate('/login');
+        }, 5000);
+      } else {
+        setError(data.message || "Erreur lors de l'inscription. Veuillez réessayer.");
+      }
+    } catch (err) {
+      setError('Erreur de connexion au serveur. Veuillez réessayer plus tard.');
+      console.error('Registration error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -195,12 +268,26 @@ export default function Register() {
               </label>
             </div>
             
+            {/* Error and Success Messages */}
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <span className="block sm:inline">{error}</span>
+              </div>
+            )}
+            
+            {success && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative" role="alert">
+                <span className="block sm:inline">{success}</span>
+              </div>
+            )}
+            
             {/* Submit Button */}
             <button 
               onClick={handleSubmit} 
-              className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded"
+              disabled={loading}
+              className="w-full bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-4 rounded disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              S'inscrire
+              {loading ? 'Inscription en cours...' : 'S\'inscrire'}
             </button>
             
             {/* Login Link */}

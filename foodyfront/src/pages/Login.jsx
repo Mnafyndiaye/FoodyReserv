@@ -1,22 +1,87 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
+  const navigate = useNavigate();
+  
   // Navigation pour retourner à la page d'accueil
   const navigateToHome = () => {
     window.location.href = '/';
   };
 
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
-  const [loginMethod, setLoginMethod] = useState('email'); // 'email' ou 'phone'
+  const [loginMethod, setLoginMethod] = useState('email'); // 'email' ou 'username'
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Tentative de connexion avec', email, password);
-    // Logique de connexion ici
+    
+    if (!identifier || !password) {
+      setError('Veuillez remplir tous les champs');
+      return;
+    }
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      // Préparation des données pour le backend
+      const requestData = {
+        identifiant: identifier,
+        motDePasse: password
+      };
+      
+      console.log('Tentative de connexion avec:', { identifiant: identifier });
+      
+      console.log('Tentative de connexion avec:', identifier);
+      
+      // Simuler une connexion réussie pour le moment
+      // Dans un environnement de production, vous utiliseriez votre API réelle
+      
+      // Stockage d'un token fictif pour simuler une connexion réussie
+      localStorage.setItem('token', 'fake-jwt-token');
+      
+      // Stocker les informations réelles de l'utilisateur
+      // Ces données seront affichées dans le profil utilisateur
+      localStorage.setItem('user', JSON.stringify({
+        email: identifier,
+        name: identifier.includes('@') ? identifier.split('@')[0] : identifier, // Utiliser la partie avant @ de l'email comme nom
+        phone: '+221 77 123 45 67', // Remplacer par le vrai numéro de téléphone de l'utilisateur
+        address: 'Dakar, Sénégal' // Remplacer par la vraie adresse de l'utilisateur
+      }));
+      
+      // Simuler une réponse réussie
+      const response = { ok: true };
+      const data = { token: 'fake-jwt-token', message: 'Connexion réussie' };
+      
+      console.log('Connexion simulée réussie');
+      console.log('Données:', data);
+      
+      console.log('Données de réponse:', data);
+      
+      if (response.ok) {
+        // Stocker le token dans le localStorage
+        localStorage.setItem('token', data.token);
+        console.log('Token stocké avec succès');
+        
+        // Redirection vers la page de profil
+        navigate('/profile');
+      } else {
+        const errorMessage = data.message || 'Identifiants invalides. Veuillez réessayer.';
+        console.error('Erreur de connexion:', errorMessage);
+        setError(errorMessage);
+      }
+    } catch (err) {
+      console.error('Erreur technique lors de la connexion:', err);
+      setError('Erreur technique lors de la connexion. Veuillez réessayer plus tard.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const togglePasswordVisibility = () => {
@@ -76,27 +141,33 @@ export default function LoginPage() {
         {/* Onglets de méthode de connexion */}
         <div className="flex mb-6">
           <button
-            className={`flex-1 py-2 text-center ${loginMethod === 'phone' ? 'bg-gray-200' : 'bg-white'}`}
-            onClick={() => setLoginMethod('phone')}
-          >
-            Connectez-vous avec Numéro de portable
-          </button>
-          <button
             className={`flex-1 py-2 text-center ${loginMethod === 'email' ? 'bg-yellow-400' : 'bg-white'}`}
             onClick={() => setLoginMethod('email')}
           >
             Connectez-vous avec Email
           </button>
+          <button
+            className={`flex-1 py-2 text-center ${loginMethod === 'username' ? 'bg-yellow-400' : 'bg-white'}`}
+            onClick={() => setLoginMethod('username')}
+          >
+            Connectez-vous avec Nom d'utilisateur
+          </button>
         </div>
 
         {/* Formulaire */}
         <form onSubmit={handleLogin} className="space-y-4">
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
+          
           <div>
             <input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type={loginMethod === 'email' ? 'email' : 'text'}
+              placeholder={loginMethod === 'email' ? 'Email' : "Nom d'utilisateur"}
+              value={identifier}
+              onChange={(e) => setIdentifier(e.target.value)}
               className="w-full border border-gray-300 rounded py-2 px-3"
               required
             />
@@ -141,9 +212,10 @@ export default function LoginPage() {
           {/* Bouton de connexion */}
           <button
             type="submit"
-            className="w-full bg-yellow-400 py-2 rounded font-medium"
+            disabled={loading}
+            className="w-full bg-yellow-400 py-2 rounded font-medium disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            S'identifier
+            {loading ? 'Connexion en cours...' : "S'identifier"}
           </button>
 
           {/* Lien d'inscription */}
