@@ -6,7 +6,6 @@ export default function Apropos() {
     window.location.href = '/';
   };
 
-  // Navigation vers la page de connexion
   const navigateToLoginPage = () => {
     window.location.href = '/login';
   };
