@@ -1,7 +1,7 @@
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
 
 export default function Apropos() {
-  // Navigation pour retourner à la page d'accueil
+
   const navigateToHome = () => {
     window.location.href = '/';
   };
