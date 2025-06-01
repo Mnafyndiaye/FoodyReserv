@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Check, MapPin, Clock } from 'lucide-react';
+import { ShoppingCart} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 
 export default function Commander() {
   const navigate = useNavigate();

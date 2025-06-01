@@ -1,36 +1,20 @@
 import React, { useEffect } from 'react';
-import '../styles/LoadingAnimation.css';
 
 const LoadingAnimation = ({ onFinished }) => {
   useEffect(() => {
     // Simuler un temps de chargement puis appeler onFinished
     const timer = setTimeout(() => {
       if (onFinished) onFinished();
-    }, 3000);
+    }, 1000);
     
     return () => clearTimeout(timer);
   }, [onFinished]);
 
   return (
-    <div className="loading-container">
-      <div className="loading-content">
-        <div className="food-loader">
-          <div className="plate"></div>
-          <div className="fork-knife">
-            <div className="fork"></div>
-            <div className="knife"></div>
-          </div>
-          <div className="food-items">
-            <div className="food-item rice"></div>
-            <div className="food-item fish"></div>
-            <div className="food-item vegetables"></div>
-            <div className="food-item sauce"></div>
-          </div>
-        </div>
-        <h2 className="loading-text">Préparation de votre repas...</h2>
-        <div className="loading-progress">
-          <div className="loading-progress-bar"></div>
-        </div>
+    <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-90 z-50">
+      <div className="text-center">
+        <div className="inline-block h-12 w-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 className="text-xl font-semibold text-gray-800">Chargement...</h2>
       </div>
     </div>
   );

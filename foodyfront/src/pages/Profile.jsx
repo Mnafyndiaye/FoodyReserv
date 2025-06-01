@@ -65,17 +65,23 @@ const Profile = () => {
 
   // Charger les données utilisateur
   useEffect(() => {
-    // Simuler le chargement des données utilisateur depuis une API
-    setTimeout(() => {
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    
+    if (token && userData) {
+      const user = JSON.parse(userData);
       setIsAuthenticated(true);
       setUserData({
-        name: 'Amadou Diallo',
-        email: 'amadou.diallo@example.com',
-        phone: '+221 77 123 45 67',
-        address: '123 Rue de Dakar, Sénégal',
+        name: user.name || 'Utilisateur',
+        email: user.email || 'email@example.com',
+        phone: user.phone || '+221 XX XXX XX XX',
+        address: user.address || 'Dakar, Sénégal',
         avatar: '/images/avatar.png'
       });
-    }, 500);
+    } else {
+      // Rediriger vers la page de connexion si l'utilisateur n'est pas connecté
+      navigate('/login');
+    }
   }, []);
 
   // Fonction pour se déconnecter
@@ -180,7 +186,7 @@ const Profile = () => {
                 </button>
                 <button 
                   onClick={handleLogout}
-                  className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-md flex items-center transition-all duration-300 hidden md:flex"
+                  className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-4 py-2 rounded-md flex items-center transition-all duration-300"
                 >
                   <LogOut size={18} className="mr-2" />
                   Se déconnecter
@@ -253,8 +259,15 @@ const Profile = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="mt-6 text-right">
-                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center ml-auto transition-all duration-300">
+                  <div className="mt-6 flex justify-between">
+                    <button 
+                      onClick={handleLogout}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md flex items-center transition-all duration-300"
+                    >
+                      <LogOut size={18} className="mr-2" />
+                      Se déconnecter
+                    </button>
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md flex items-center transition-all duration-300">
                       <Edit size={18} className="mr-2" />
                       Modifier mes informations
                     </button>

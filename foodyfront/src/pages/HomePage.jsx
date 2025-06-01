@@ -151,15 +151,6 @@ export default function HomePage() {
       rating: 4.7
     }
   ];
-  
-  // Catégories de nourriture
-  const foodCategories = [
-    { id: 1, name: 'PLATS PRINCIPAUX', image: '/images/categories/cuisineafricaine.png' },
-    { id: 2, name: 'ENTRÉES', image: '/images/categories/platdujour.png' },
-    { id: 3, name: 'DESSERTS', image: '/images/categories/Brunch.png' },
-    { id: 4, name: 'BOISSONS', image: '/images/categories/sushi.png' },
-    { id: 5, name: 'SPÉCIALITÉS', image: '/images/categories/cuisinelibanaise.png' },
-  ];
     
   return (
     <div className="min-h-screen bg-white">
@@ -175,11 +166,18 @@ export default function HomePage() {
           <nav className="hidden md:flex space-x-6 nav-animation">
             <a href="/" className="font-medium nav-item">Accueil</a>
             <a href="/menu" className="font-medium nav-item">Menu</a>
-            <a href="/commander" className="font-medium nav-item">Commander</a>
-            <a href="/reserver" className="font-medium nav-item">Réserver</a>
+            {isAuthenticated ? (
+              <a href="/commander" className="font-medium nav-item">Commander</a>
+            ) : (
+              <a href="/login" className="font-medium nav-item text-gray-400" title="Connectez-vous pour commander">Commander</a>
+            )}
+            {isAuthenticated ? (
+              <a href="/reserver" className="font-medium nav-item">Réserver</a>
+            ) : (
+              <a href="/login" className="font-medium nav-item text-gray-400" title="Connectez-vous pour réserver">Réserver</a>
+            )}
             <a href="/apropos" className="font-medium nav-item">À propos</a>
             <a href="/contact" className="font-medium nav-item">Contactez-Nous</a>
-            <a href="/profile" className="font-medium nav-item">Mon Profil</a>
           </nav>
           
           <div className="flex items-center space-x-4 buttons-animation">
@@ -188,10 +186,10 @@ export default function HomePage() {
               <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
             </button>
             <button 
-              onClick={() => navigateToPage('/profile')}
+              onClick={() => navigateToPage(isAuthenticated ? '/profile' : '/login')}
               className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md font-medium transition-all duration-300 login-button"
             >
-              Mon Compte
+              {isAuthenticated ? 'Profil' : 'Se Connecter'}
             </button>
           </div>
         </div>

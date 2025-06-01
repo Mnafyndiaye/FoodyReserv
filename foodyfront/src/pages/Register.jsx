@@ -138,21 +138,29 @@ export default function Register() {
           <div className="border-b-4 border-orange-400 w-16 mx-auto mb-8"></div>
           
           {/* Social Login Buttons */}
-          <div className="flex gap-3 mb-6">
-            <button 
-              type="button"
-              className="flex-1 bg-blue-600 text-white py-2 px-4 rounded flex items-center justify-center"
-            >
-              <span>Facebook</span>
-            </button>
-            <button 
-              type="button"
-              className="flex-1 bg-red-500 text-white py-2 px-4 rounded flex items-center justify-center"
-            >
-              <span>Google</span>
-            </button>
-          </div>
-          
+          <div className="flex space-x-4">
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="bg-blue-600 hover:bg-blue-700 w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z" />
+                  </svg>
+                </a>
+                <a
+  href="https://google.com"
+  target="_blank"
+  rel="noopener noreferrer"
+  className="bg-white-500 hover:bg-yellow-600 w-10 h-10 rounded-full flex items-center justify-center transition-colors duration-300"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 533.5 544.3" width="20" height="20">
+    <path fill="#4285F4" d="M533.5 278.4c0-17.4-1.4-34.5-4.1-51H272v96.7h147.3c-6.3 33.5-25 61.8-53.4 80.8v67h86.1c50.3-46.4 81.5-114.9 81.5-193.5z"/>
+    <path fill="#34A853" d="M272 544.3c72.6 0 133.5-24.1 178-65.5l-86.1-67c-24 16.1-54.6 25.5-91.9 25.5-70.6 0-130.5-47.7-151.9-111.7H32.9v69.9C77.4 482.2 167.3 544.3 272 544.3z"/>
+    <path fill="#FBBC05" d="M120.1 325.6c-10.2-30.5-10.2-63.3 0-93.8v-69.9H32.9c-32.9 65.8-32.9 143.9 0 209.7l87.2-45.9z"/>
+    <path fill="#EA4335" d="M272 107.7c39.5 0 75 13.6 102.9 40.3l77.2-77.2C405.5 24.1 344.6 0 272 0 167.3 0 77.4 62.1 32.9 157.4l87.2 69.9c21.4-64 81.3-111.7 151.9-111.7z"/>
+  </svg>
+</a>
+
+
+              </div>
+
           {/* Divider */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
@@ -241,15 +249,6 @@ export default function Register() {
               onChange={handleChange}
               className="w-full p-3 border border-gray-300 rounded"
             />
-            
-            {/* Profile Image Upload */}
-            <div>
-              <p className="mb-2">Ajouter une image de profil</p>
-              <div className="flex items-center gap-2 cursor-pointer bg-gray-100 p-2 rounded w-fit">
-                <Upload size={20} />
-                <span>télécharger une image</span>
-              </div>
-            </div>
             
             {/* Terms and Conditions */}
             <div className="flex items-start">
