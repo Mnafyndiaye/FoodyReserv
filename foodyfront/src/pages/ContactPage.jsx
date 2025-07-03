@@ -187,15 +187,21 @@ export default function ContactPage() {
             </div>
           </div>
           
-          <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
-            <h2 className="text-2xl font-bold mb-4 text-center">Où nous trouver</h2>
-            <div className="w-full h-64 bg-gray-200 rounded-lg">
-              {/* Ici, vous pouvez intégrer une carte Google Maps */}
-              <div className="w-full h-full flex items-center justify-center">
-                <p className="text-gray-500">Carte Google Maps sera intégrée ici</p>
+          <div className="space-y-8">
+              {/* Carte (simulée) */}
+              <div>
+                <h3 className="text-2xl font-bold text-gray-800 mb-4">Notre localisation</h3>
+                <div className="w-24 h-1 bg-green-600 mb-6" />
+                <div className="bg-gray-200 h-64 rounded-lg flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-green-400 to-yellow-400 opacity-20" />
+                  <div className="text-center z-10">
+                    <MapPin className="h-12 w-12 text-green-600 mx-auto mb-2" />
+                    <p className="text-gray-700 font-medium">123 Avenue Cheikh Anta Diop, Dakar, Sénégal</p>
+                    <p className="text-gray-600">Dakar, Sénégal</p>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
         </div>
       </div>
       
