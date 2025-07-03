@@ -224,14 +224,6 @@ const DeliveryProfile = () => {
                 <Truck size={18} className="inline mr-2" />
                 Mes Livraisons
               </button>
-              <button 
-                className={`px-6 py-3 font-medium text-sm transition-all duration-300 border-b-2 ${activeTab === 'allDeliveryAccounts' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
-                onClick={() => setActiveTab('allDeliveryAccounts')}
-                aria-label="Afficher tous les livreurs"
-              >
-                <Users size={18} className="inline mr-2" />
-                Tous les Livreurs
-              </button>
             </div>
           </div>
 
@@ -353,38 +345,6 @@ const DeliveryProfile = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Onglet Tous les Livreurs */}
-            {activeTab === 'allDeliveryAccounts' && (
-              <div>
-                <h2 className="text-xl font-semibold mb-6">Liste des livreurs</h2>
-                {allDeliveryAccounts.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-lg">
-                    <Users size={48} className="mx-auto text-gray-400 mb-4" />
-                    <p className="text-gray-500">Aucun livreur inscrit pour le moment.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    {allDeliveryAccounts.map((account, index) => (
-                      account.role === 'LIVREUR' && (
-                        <div key={index} className="bg-gray-50 rounded-lg shadow-sm p-4">
-                          <div className="flex justify-between items-center">
-                            <div>
-                              <p className="font-medium">{account.name}</p>
-                              <p className="text-gray-500 text-sm">{account.email}</p>
-                            </div>
-                            <div>
-                              <p className="text-sm text-gray-500">Véhicule</p>
-                              <p className="font-medium">{account.vehicle}</p>
-                            </div>
-                          </div>
-                        </div>
-                      )
                     ))}
                   </div>
                 )}
