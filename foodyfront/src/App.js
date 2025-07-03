@@ -20,6 +20,7 @@ import AdminProfile from './pages/admin/AdminProfile';
 import AdminReservation from './pages/admin/AdminReservation';
 import AdminMessages from './pages/admin/AdminMessages';
 import AdminCommentaires from './pages/admin/AdminCommentaires';
+import DeliveryProfile from './pages/livreur/DeliveryProfile';
 
 // Import des styles globaux
 import './styles/GlobalEffects.css';
@@ -57,6 +58,7 @@ function App() {
             <Route path="/admin/commentaires" element={<AdminCommentaires />} />
             <Route path="/admin/messages" element={<AdminMessages />} />
             <Route path="/admin/profile" element={<AdminProfile />} />
+            <Route path="/delivery-profile" element={<DeliveryProfile />} />
 
             {/* Routes protégées qui nécessitent une authentification */}
             <Route path="/commander" element={
