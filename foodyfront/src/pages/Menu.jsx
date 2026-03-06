@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ShoppingCart, Star, Search, Filter, Clock, ChevronRight } from 'lucide-react';
+import { Star, Search, Filter, Clock, ChevronRight } from 'lucide-react';
 import MenuSlider from '../components/MenuSlider';
+import Header from '../components/Header'; // Import du composant Header
+import { getUserRole } from '../utils/auth'; // Ajoute cet import
 
 // Import des images
 import thieboudieune from '../images/thieboudieune.jpg';
@@ -16,10 +18,12 @@ import pastels from '../images/pastel.png';
 export default function Menu() {
   const navigate = useNavigate();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Tous');
   const [selectedPlat, setSelectedPlat] = useState(null);
   const [showPlatDetails, setShowPlatDetails] = useState(false);
+  
   const [userRating, setUserRating] = useState(0);
   const [comment, setComment] = useState('');
   
@@ -126,13 +130,27 @@ export default function Menu() {
     }
   ];
 
-  // Vérifier si l'utilisateur est authentifié
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      setIsAuthenticated(true);
-    }
-  }, []);
+    const headerRef = useRef(null);
+    const [animationComplete, setAnimationComplete] = useState(false);
+    
+  
+    // Vérifier l'authentification
+    useEffect(() => {
+      const token = localStorage.getItem('token');
+      setIsAuthenticated(!!token);
+      setUserRole(getUserRole());
+  
+      // Animation d'entrée pour le header
+      setTimeout(() => {
+        if (headerRef.current) {
+          headerRef.current.classList.add('animate-header');
+        }
+      }, 100);
+  
+      setTimeout(() => {
+        setAnimationComplete(true);
+      }, 1500);
+    }, []);
 
   // Filtrer les plats en fonction de la recherche et de la catégorie
   const filteredPlats = plats.filter(plat => {
@@ -174,41 +192,10 @@ export default function Menu() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="bg-white shadow-sm py-4">
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <a href="/" className="flex items-center">
-              <span className="text-green-700 text-2xl font-bold">FOODY</span>
-              <span className="text-yellow-500 text-2xl font-bold">RESERV</span>
-              <img src="/images/logo.png" className="h-10 ml-2" alt="Logo" />
-            </a>
-          </div>
-          
-          <nav className="hidden md:flex space-x-6">
-            <a href="/" className="font-medium">Accueil</a>
-            <a href="/menu" className="font-medium text-green-700">Menu</a>
-            <a href="/reserver" className="font-medium">Réserver</a>
-            <a href="/apropos" className="font-medium">À propos</a>
-            <a href="/contact" className="font-medium">Contactez-Nous</a>
-          </nav>
-          
-          <div className="flex items-center space-x-4">
-            <button className="relative">
-              <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">0</span>
-            </button>
-            <button 
-              onClick={() => navigate('/login')}
-              className="bg-yellow-500 text-white px-4 py-2 rounded-md font-medium"
-            >
-              {isAuthenticated ? 'MON COMPTE' : 'SE CONNECTER'}
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header userRole={userRole} isAuthenticated={isAuthenticated} />
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 pt-20">
         {showPlatDetails && selectedPlat ? (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
             <div className="flex justify-between mb-4">

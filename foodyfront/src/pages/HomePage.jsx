@@ -6,6 +6,8 @@ import AnimatedFoodCard from '../components/AnimatedFoodCard';
 import CuisineShowcase from '../components/CuisineShowcase';
 import ParallaxSection from '../components/ParallaxSection';
 import PhotoGallery from '../components/PhotoGallery';
+import { getUserRole } from '../utils/auth'; // Ajoute cet import
+import Header from '../components/Header';
 
 // Importation des images
 import platsSenegalais from '../images/Plats Sénégalais.png';
@@ -19,6 +21,7 @@ const HomePage = () => {
   const [searchAddress, setSearchAddress] = useState('');
   const [deliveryMode, setDeliveryMode] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [animationComplete, setAnimationComplete] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -28,6 +31,7 @@ const HomePage = () => {
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsAuthenticated(!!token);
+    setUserRole(getUserRole());
 
     // Animation d'entrée pour le header
     setTimeout(() => {
@@ -148,8 +152,77 @@ const HomePage = () => {
     },
   ];
 
+  const getNavigationLinks = () => {
+    if (!isAuthenticated) {
+      return [
+        { path: '/', label: 'Accueil' },
+        { path: '/menu', label: 'Menu' },
+        { path: '/login', label: 'Commander', disabled: true, title: 'Connectez-vous pour commander' },
+        { path: '/login', label: 'Réserver', disabled: true, title: 'Connectez-vous pour réserver' },
+        { path: '/apropos', label: 'À propos' },
+        { path: '/contact', label: 'Contactez-Nous' },
+      ];
+    }
+
+    if (userRole === 'CLIENT') {
+      return [
+        { path: '/', label: 'Accueil' },
+        { path: '/menu', label: 'Menu' },
+        { path: '/commander', label: 'Commander' },
+        { path: '/reserver', label: 'Réserver' },
+        { path: '/apropos', label: 'À propos' },
+        { path: '/contact', label: 'Contactez-Nous' },
+      ];
+    }
+
+    if (userRole === 'MANAGER') {
+      return [
+        { path: '/', label: 'Accueil' },
+        { path: '/admin/commandes', label: 'Commandes' },
+        { path: '/admin/reservations', label: 'Réservations' },
+        { path: '/admin/menus', label: 'Gestion Menu' },
+        { path: '/admin/clients', label: 'Clients' },
+      ];
+    }
+
+    if (userRole === 'LIVREUR') {
+      return [
+        { path: '/', label: 'Accueil' },
+        { path: '/livreur/commandes', label: 'Mes Livraisons' },
+        { path: '/livreur/disponibilite', label: 'Disponibilité' },
+        { path: '/contact', label: 'Contactez-Nous' },
+      ];
+    }
+
+    // Par défaut
+    return [
+      { path: '/', label: 'Accueil' },
+      { path: '/menu', label: 'Menu' },
+      { path: '/apropos', label: 'À propos' },
+      { path: '/contact', label: 'Contactez-Nous' },
+    ];
+  };
+
+
+  // Navigation dynamique selon le rôle
+  const getProfilePath = () => {
+    if (!isAuthenticated) return '/login';
+    if (userRole === 'CLIENT') return '/profile';
+    if (userRole === 'MANAGER') return '/admin/profile';
+    if (userRole === 'LIVREUR') return '/livreur/profile';
+    return '/profile';
+  };
+
+  const getCommanderPath = () => {
+    if (!isAuthenticated) return '/login';
+    if (userRole === 'CLIENT') return '/commander';
+    if (userRole === 'MANAGER') return '/admin/commandes';
+    if (userRole === 'LIVREUR') return '/livreur/commandes';
+    return '/commander';
+  };
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white relative">
       {/* SEO Metadata */}
       <>
         <title>FOODY RESERV - Accueil</title>
@@ -160,131 +233,7 @@ const HomePage = () => {
       </>
 
       {/* Header */}
-      <header
-        ref={headerRef}
-        className="bg-white shadow-sm py-4 transition-all duration-800 ease-out"
-      >
-        <div className="container mx-auto px-4 flex justify-between items-center">
-          <div className="flex items-center transition-opacity duration-500 delay-300">
-            <span className="text-green-700 text-2xl font-bold">FOODY</span>
-            <span className="text-yellow-500 text-2xl font-bold">RESERV</span>
-            <img
-              src="/images/logo.png"
-              className="h-10 ml-2"
-              alt="Logo FOODY RESERV"
-              loading="lazy"
-            />
-          </div>
-
-          {/* Navigation Desktop */}
-          <nav className="hidden md:flex space-x-6 transition-opacity duration-500 delay-500">
-            {[
-              { path: '/', label: 'Accueil' },
-              { path: '/menu', label: 'Menu' },
-              {
-                path: isAuthenticated ? '/commander' : '/login',
-                label: 'Commander',
-                disabled: !isAuthenticated,
-                title: !isAuthenticated ? 'Connectez-vous pour commander' : '',
-              },
-              {
-                path: isAuthenticated ? '/reserver' : '/login',
-                label: 'Réserver',
-                disabled: !isAuthenticated,
-                title: !isAuthenticated ? 'Connectez-vous pour réserver' : '',
-              },
-              { path: '/apropos', label: 'À propos' },
-              { path: '/contact', label: 'Contactez-Nous' },
-            ].map((item) => (
-              <a
-                key={item.path}
-                href={item.path}
-                className={`font-medium relative pb-1 hover:text-yellow-500 transition-colors duration-300 ${item.disabled ? 'text-gray-400 cursor-not-allowed' : ''}`}
-                title={item.title}
-                onClick={(e) => {
-                  e.preventDefault();
-                  if (!item.disabled) navigateToPage(item.path);
-                }}
-                aria-disabled={item.disabled}
-              >
-                {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-yellow-500 transition-all duration-300 hover:w-full" />
-              </a>
-            ))}
-          </nav>
-
-          {/* Navigation Mobile */}
-          <div className="md:hidden">
-            <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label={isMenuOpen ? 'Fermer le menu' : 'Ouvrir le menu'}
-              className="text-gray-800"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-          </div>
-
-          {/* Menu Mobile */}
-          {isMenuOpen && (
-            <div className="absolute top-16 left-0 w-full bg-white shadow-lg md:hidden z-50">
-              <nav className="flex flex-col items-center py-4 space-y-4">
-                {[
-                  { path: '/', label: 'Accueil' },
-                  { path: '/menu', label: 'Menu' },
-                  {
-                    path: isAuthenticated ? '/commander' : '/login',
-                    label: 'Commander',
-                    disabled: !isAuthenticated,
-                    title: !isAuthenticated ? 'Connectez-vous pour commander' : '',
-                  },
-                  {
-                    path: isAuthenticated ? '/reserver' : '/login',
-                    label: 'Réserver',
-                    disabled: !isAuthenticated,
-                    title: !isAuthenticated ? 'Connectez-vous pour réserver' : '',
-                  },
-                  { path: '/apropos', label: 'À propos' },
-                  { path: '/contact', label: 'Contactez-Nous' },
-                ].map((item) => (
-                  <a
-                    key={item.path}
-                    href={item.path}
-                    className={`font-medium text-lg ${item.disabled ? 'text-gray-400 cursor-not-allowed' : 'text-gray-800 hover:text-yellow-500'} transition-colors duration-300`}
-                    title={item.title}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      if (!item.disabled) navigateToPage(item.path);
-                    }}
-                    aria-disabled={item.disabled}
-                  >
-                    {item.label}
-                  </a>
-                ))}
-              </nav>
-            </div>
-          )}
-
-          {/* Boutons */}
-          <div className="flex items-center space-x-4 transition-opacity duration-500 delay-700">
-            <button
-              className="relative transform transition-transform hover:scale-110"
-              aria-label="Voir le panier"
-            >
-              <ShoppingCart size={24} />
-              <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">
-                0
-              </span>
-            </button>
-            <button
-              onClick={() => navigateToPage(isAuthenticated ? '/profile' : '/login')}
-              className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md font-medium transition-all duration-300 hover:shadow-md"
-              aria-label={isAuthenticated ? 'Accéder au profil' : 'Se connecter'}
-            >
-              {isAuthenticated ? 'Profil' : 'Se Connecter'}
-            </button>
-          </div>
-        </div>
-      </header>
+      <Header  userRole={userRole} isAuthenticated={isAuthenticated} />
 
       {/* Carrousel */}
       <section className="relative">

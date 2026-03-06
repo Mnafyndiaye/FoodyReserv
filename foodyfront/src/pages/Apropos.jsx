@@ -1,20 +1,37 @@
+import { useEffect, useState, useRef } from 'react';
+import Header from '../components/Header';
 import { ArrowLeft, ShoppingCart } from 'lucide-react';
-import Navbar from '../components/Navbar';
+import { getUserRole } from '../utils/auth'; // Ajoute cet import
 
 export default function Apropos() {
+  const [userRole, setUserRole] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const headerRef = useRef(null);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  
 
-  const navigateToHome = () => {
-    window.location.href = '/';
-  };
+  // Vérifier l'authentification
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    setIsAuthenticated(!!token);
+    setUserRole(getUserRole());
 
-  const navigateToLoginPage = () => {
-    window.location.href = '/login';
-  };
+    // Animation d'entrée pour le header
+    setTimeout(() => {
+      if (headerRef.current) {
+        headerRef.current.classList.add('animate-header');
+      }
+    }, 100);
+
+    setTimeout(() => {
+      setAnimationComplete(true);
+    }, 1500);
+  }, []);
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col pt-20">
       {/* Barre de navigation réutilisable */}
-      <Navbar/>
+      <Header userRole={userRole} isAuthenticated={isAuthenticated} />
 
       {/* Espacement supérieur */}
       <div className="container mx-auto px-4 pt-6">
@@ -25,25 +42,30 @@ export default function Apropos() {
       <div className="container mx-auto px-4 py-12 flex-grow">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-4xl font-bold mb-8">À propos de FOODY RESERV</h1>
-          
+
           <div className="mb-10 flex justify-center">
-            <img src="/images/about-hero.jpg" alt="L'équipe FOODY RESERV" className="rounded-lg shadow-md max-w-full h-auto" onError={(e) => {
-              e.target.src = "/api/placeholder/800/400";
-              e.target.alt = "Image équipe FOODY RESERV";
-            }} />
+            <img
+              src="/images/about-hero.jpg"
+              alt="L'équipe FOODY RESERV"
+              className="rounded-lg shadow-md max-w-full h-auto"
+              onError={(e) => {
+                e.target.src = "/api/placeholder/800/400";
+                e.target.alt = "Image équipe FOODY RESERV";
+              }}
+            />
           </div>
-          
+
           <div className="prose max-w-none">
             <h2 className="text-2xl font-bold text-green-700 mb-4">Notre Mission</h2>
             <p className="mb-6">
-              Chez <strong>FOODY RESERV</strong>, notre mission est de connecter les amateurs de bonne cuisine aux meilleurs restaurants de Dakar. 
+              Chez <strong>FOODY RESERV</strong>, notre mission est de connecter les amateurs de bonne cuisine aux meilleurs restaurants de Dakar.
               Nous facilitons la commande et la livraison de repas, permettant à chacun de savourer des plats exceptionnels dans le confort de son domicile ou de son bureau.
             </p>
-            
+
             <h2 className="text-2xl font-bold text-yellow-500 mb-4">Notre Histoire</h2>
             <p className="mb-6">
-              Fondée en 2023 à Dakar, FOODY RESERV est née d'une vision simple : offrir un service de livraison de repas fiable, rapide et de qualité. 
-              Nous avons commencé avec quelques restaurants partenaires et une équipe passionnée. Aujourd'hui, nous sommes fiers de collaborer avec plus de 100 établissements 
+              Fondée en 2023 à Dakar, FOODY RESERV est née d'une vision simple : offrir un service de livraison de repas fiable, rapide et de qualité.
+              Nous avons commencé avec quelques restaurants partenaires et une équipe passionnée. Aujourd'hui, nous sommes fiers de collaborer avec plus de 100 établissements
               et de servir des milliers de clients satisfaits chaque jour.
             </p>
 
@@ -90,8 +112,8 @@ export default function Apropos() {
           </div>
         </div>
       </div>
-      
-      {/* Footer - même que sur la page d'accueil */}
+
+      {/* Footer */}
       <footer className="bg-yellow-600 text-white py-8 mt-auto">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between">
@@ -103,25 +125,25 @@ export default function Apropos() {
               <div>
                 <h4 className="font-bold mb-3">À propos</h4>
                 <ul className="space-y-2">
-                  <li><a href="/about" className="hover:text-yellow-500">Qui sommes-nous</a></li>
-                  <li><a href="/how-it-works" className="hover:text-yellow-500">Comment ça marche</a></li>
-                  <li><a href="/blog" className="hover:text-yellow-500">Blog</a></li>
+                  <li><a href="/about" className="hover:text-yellow-300">Qui sommes-nous</a></li>
+                  <li><a href="/how-it-works" className="hover:text-yellow-300">Comment ça marche</a></li>
+                  <li><a href="/blog" className="hover:text-yellow-300">Blog</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-3">Aide</h4>
                 <ul className="space-y-2">
-                  <li><a href="/faq" className="hover:text-yellow-500">FAQ</a></li>
-                  <li><a href="/contact" className="hover:text-yellow-500">Contact</a></li>
-                  <li><a href="/terms" className="hover:text-yellow-500">Conditions</a></li>
+                  <li><a href="/faq" className="hover:text-yellow-300">FAQ</a></li>
+                  <li><a href="/contact" className="hover:text-yellow-300">Contact</a></li>
+                  <li><a href="/terms" className="hover:text-yellow-300">Conditions</a></li>
                 </ul>
               </div>
               <div>
                 <h4 className="font-bold mb-3">Partenaires</h4>
                 <ul className="space-y-2">
-                  <li><a href="/restaurants" className="hover:text-yellow-500">Restaurants</a></li>
-                  <li><a href="/drivers" className="hover:text-yellow-500">Livreurs</a></li>
-                  <li><a href="/investors" className="hover:text-yellow-500">Investisseurs</a></li>
+                  <li><a href="/restaurants" className="hover:text-yellow-300">Restaurants</a></li>
+                  <li><a href="/drivers" className="hover:text-yellow-300">Livreurs</a></li>
+                  <li><a href="/investors" className="hover:text-yellow-300">Investisseurs</a></li>
                 </ul>
               </div>
             </div>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, EyeOff, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
+import { inscription as inscriptionApi } from '../api/auth';
 
 // Composant pour les champs de formulaire
 const InputField = ({ label, name, type, value, onChange, error, placeholder, ...props }) => (
@@ -96,64 +97,27 @@ const Register = () => {
         role: 'CLIENT',
       };
 
-      // Simuler une inscription réussie avec des données statiques
-      // À remplacer par une vraie requête API lorsque le backend sera prêt :
-      /*
-      const response = await fetch('http://localhost:8080/api/auth/inscription', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      });
+      // Appel réel à l'API d'inscription
+      const { data } = await inscriptionApi(requestData);
 
-      let data;
-      const contentType = response.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        data = await response.json();
-      } else {
-        const text = await response.text();
-        try {
-          data = JSON.parse(text);
-        } catch {
-          data = { message: text };
-        }
-      }
-
-      if (response.ok) {
-        const username = data.nomUtilisateur || requestData.nomUtilisateur;
-        setGeneratedUsername(username);
-        setSuccess(
-          `Inscription réussie ! Votre nom d'utilisateur est : ${username}. Redirection vers la connexion dans 5 secondes...`
-        );
-        localStorage.setItem('token', 'mock-jwt-token');
-        setTimeout(() => navigate('/login'), 5000);
-      } else {
-        setErrors({ global: data.message || "Erreur lors de l'inscription" });
-      }
-      */
-
-      // Simulation de réponse réussie
-      const username = requestData.nomUtilisateur;
+      const username = data.nomUtilisateur || requestData.nomUtilisateur;
       setGeneratedUsername(username);
-      setSuccess(
-        `Inscription réussie ! Votre nom d'utilisateur est : ${username}. Redirection vers la connexion dans 5 secondes...`
-      );
+      setSuccess(`Inscription réussie ! Votre nom d'utilisateur est : ${username}. Redirection vers la connexion dans 3 secondes...`);
 
-      // Stocker les données utilisateur dans localStorage pour la simulation
-      const userData = {
-        name: `${formData.firstName} ${formData.lastName}`,
-        email: formData.email,
-        phone: '+221' + formData.phone,
-        address: 'Dakar, Sénégal', // Adresse fictive pour la simulation
-      };
-      localStorage.setItem('token', 'mock-jwt-token');
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Stocker le token JWT renvoyé si présent
+      if (data.token) {
+        localStorage.setItem('accessToken', data.token);
+      }
 
-      setTimeout(() => navigate('/login'), 5000);
+      setTimeout(() => navigate('/login'), 3000);
     } catch (err) {
-      setErrors({ global: 'Erreur inattendue. Veuillez réessayer.' });
-      console.error('Erreur de simulation:', err);
+      if (err.response) {
+      const message = err.response.data?.message || "Erreur lors de l'inscription";
+      setErrors({ global: message });
+    } else {
+      setErrors({ global: 'Erreur réseau. Veuillez vérifier votre connexion.' });
+    }
+      console.error('Erreur lors de l\'inscription:', err);
     } finally {
       setLoading(false);
     }
